@@ -1,3 +1,7 @@
+/*
+ * Library for ADS1120
+ */
+
 #ifndef __ADC_INCLUDED__
 #define __ADC_INCLUDED__
 
