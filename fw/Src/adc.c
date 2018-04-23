@@ -18,9 +18,9 @@ HAL_StatusTypeDef adc_set_regs(uint8_t start_reg, uint8_t number_reg, uint8_t va
 
     config[0] = ADC_CMD_WREG | (start_reg << 2) | (number_reg - 1); // nn + 1
 
-    for (i=0; i < number_reg; i++)
+    for (i = 0; i < number_reg; i++)
     {
-        config[i+1] = values[i];
+        config[i + 1] = values[i];
     }
 
     return HAL_SPI_Transmit(&hspi1, config, number_reg + 1, 0xFFFF);
@@ -47,8 +47,7 @@ void adc_init(void)
 
 HAL_StatusTypeDef adc_start(void)
 {
-		uint8_t config[] = {ADC_CMD_START};  
-		HAL_Delay(100);
-		return HAL_SPI_Transmit(&hspil, config, 1, 0xFFFF);
-		
+    uint8_t config[] = { ADC_CMD_START };
+    HAL_Delay(100);
+    return HAL_SPI_Transmit(&hspi1, config, 1, 0xFFFF);
 }
