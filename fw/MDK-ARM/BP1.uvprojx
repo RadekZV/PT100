@@ -509,6 +509,11 @@
               <FileType>1</FileType>
               <FilePath>../Src/stm32f0xx_hal_msp.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\adc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

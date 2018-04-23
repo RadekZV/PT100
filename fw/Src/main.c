@@ -114,7 +114,6 @@ int main(void)
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
     adc_init();
-	adc_start();
     /* USER CODE END 2 */
 
     /* Infinite loop */

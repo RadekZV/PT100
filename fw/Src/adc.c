@@ -37,11 +37,20 @@ void adc_init(void)
 
     if (adc_set_regs(ADC_REG0, 4, config) != HAL_OK)
     {
-        HAL_UART_Transmit(&huart1, (uint8_t *) "SPI config error\n", 17, 0xFFFF);
+        HAL_UART_Transmit(&huart1, (uint8_t *) "SPI config error\n\r", 17, 0xFFFF);
     }
     else
     {
-        HAL_UART_Transmit(&huart1, (uint8_t *) "SPI config ok\n", 14, 0xFFFF);
+        HAL_UART_Transmit(&huart1, (uint8_t *) "SPI config ok\n\r", 14, 0xFFFF);
+    }
+		
+		if (adc_start() != HAL_OK)
+    {
+        HAL_UART_Transmit(&huart1, (uint8_t *) "SPI start error\n\r", 17, 0xFFFF);
+    }
+    else
+    {
+        HAL_UART_Transmit(&huart1, (uint8_t *) "SPI start ok\n\r", 14, 0xFFFF);
     }
 }
 
