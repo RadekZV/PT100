@@ -20,5 +20,6 @@
 #define ADC_REG3 0x03
 
 void adc_init(void);
+HAL_StatusTypeDef adc_start(void);
 
 #endif // __ADC_INCLUDED__
