@@ -61,9 +61,9 @@ dkms.conf
 *.dep
 *.axf
 *.htm
+*.bin
 *Debug*
-
+*build/*
 
 # Atom
 .tags*
-*build/*
