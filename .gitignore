@@ -66,4 +66,4 @@ dkms.conf
 
 # Atom
 .tags*
-*.bin
+*build/*
