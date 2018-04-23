@@ -89,7 +89,7 @@ PUTCHAR_PROTOTYPE
 int main(void)
 {
     /* USER CODE BEGIN 1 */
-    float value = 0;
+
     /* USER CODE END 1 */
 
     /* MCU Configuration----------------------------------------------------------*/
@@ -120,30 +120,10 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        for (value = 0; value < 20; value++)
-        {
-            if (value > 10)
-            {
-                HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 1); // Red
-                HAL_Delay(200);
-                HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 0); // Red
-                HAL_Delay(200);
-            }
-            else
-            {
-                HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1); // Green
-                HAL_Delay(200);
-                HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0); // Green
-                HAL_Delay(200);
-            }
-
-            // printf("float value: %4.2f\n\r", value);
-
-            // HAL_UART_Transmit(&huart1, bufftx, 8, 100);
-            // HAL_UART_Transmit(&huart1, bufftx1, 7, 100);
-            // HAL_Delay(200);
-        }
-
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 1); // Red
+        HAL_Delay(200);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 0); // Red
+        HAL_Delay(200);
 
         /* USER CODE END WHILE */
 
