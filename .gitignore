@@ -59,7 +59,10 @@ dkms.conf
 *.lnp
 *.lst
 *.dep
+*.axf
+*.htm
 *Debug*
+
 
 # Atom
 .tags*
