@@ -113,6 +113,8 @@ int main(void)
     MX_SPI1_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
+    printf("POWER ON\n");
+
     adc_init();
     /* USER CODE END 2 */
 
