@@ -137,11 +137,11 @@ int main(void)
                 HAL_Delay(200);
             }
 
-            //printf("float value: %4.2f\n\r", value);
+            // printf("float value: %4.2f\n\r", value);
 
-            //HAL_UART_Transmit(&huart1, bufftx, 8, 100);
-            //HAL_UART_Transmit(&huart1, bufftx1, 7, 100);
-            //HAL_Delay(200);
+            // HAL_UART_Transmit(&huart1, bufftx, 8, 100);
+            // HAL_UART_Transmit(&huart1, bufftx1, 7, 100);
+            // HAL_Delay(200);
         }
 
 
@@ -271,7 +271,7 @@ static void MX_GPIO_Init(void)
 
     /*Configure GPIO pin : SPI1_DRDY_Pin */
     GPIO_InitStruct.Pin  = SPI1_DRDY_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(SPI1_DRDY_GPIO_Port, &GPIO_InitStruct);
 
@@ -281,6 +281,10 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull  = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /* EXTI interrupt init*/
+    HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 
 /* USER CODE BEGIN 4 */

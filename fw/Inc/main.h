@@ -51,6 +51,7 @@
 
 #define SPI1_DRDY_Pin GPIO_PIN_1
 #define SPI1_DRDY_GPIO_Port GPIOB
+#define SPI1_DRDY_EXTI_IRQn EXTI0_1_IRQn
 #define LED_GREEN_Pin GPIO_PIN_8
 #define LED_GREEN_GPIO_Port GPIOA
 #define LED_RED_Pin GPIO_PIN_10
