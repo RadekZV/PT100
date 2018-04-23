@@ -137,11 +137,11 @@ int main(void)
                 HAL_Delay(200);
             }
 
-            printf("float value: %4.2f\n\r", value);
+            //printf("float value: %4.2f\n\r", value);
 
-            HAL_UART_Transmit(&huart1, bufftx, 8, 100);
-            HAL_UART_Transmit(&huart1, bufftx1, 7, 100);
-            HAL_Delay(200);
+            //HAL_UART_Transmit(&huart1, bufftx, 8, 100);
+            //HAL_UART_Transmit(&huart1, bufftx1, 7, 100);
+            //HAL_Delay(200);
         }
 
 

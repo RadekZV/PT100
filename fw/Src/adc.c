@@ -10,7 +10,7 @@ void adc_init(void)
 	//HAL_SPI_Transmit() vrací HAL_OK kontrolovat a vypisovat chyby na uart
 
 	uint8_t config[5];
-	config[0] = ADC_CMD_WREG | (ADC_REG0 << 2) | 4;
+	config[0] = ADC_CMD_WREG | (ADC_REG0 << 2) | 3; // nn + 1
 	config[1] = 0x06;  //0b00000110; // zápis do reg 0
 	config[2] = 0x04;  //0b00000100;
 	config[3] = 0x46;  //0b01000110;
@@ -20,4 +20,11 @@ void adc_init(void)
     else
         HAL_UART_Transmit(&huart1, (uint8_t *) "SPI config ok\n", 14, 0xFFFF);
 
+}
+
+void adc_start(void)
+{
+
+	
+	
 }
