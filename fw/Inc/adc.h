@@ -1,6 +1,8 @@
 #ifndef __ADC_INCLUDED__
 #define __ADC_INCLUDED__
 
+#include "stm32f0xx_hal.h"
+
 #define ADC_CMD_RESET     0b00000110 // 0000 011x - reset device
 #define ADC_CMD_START     0b00001000 // 0000 100x - start or restart conversion
 #define ADC_CMD_POWERDOWN 0b00000010 // 0000 001x - power-down

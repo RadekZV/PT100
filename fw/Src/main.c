@@ -72,7 +72,7 @@ static void MX_USART1_UART_Init(void);
 
 #endif /* __GNUC__ */
 
-/* USER CODE END PFP */
+/* USER CODE ENbD PFP */
 
 /* USER CODE BEGIN 0 */
 PUTCHAR_PROTOTYPE
@@ -124,9 +124,9 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        for (value = 0; value < 40; value++)
+        for (value = 0; value < 20; value++)
         {
-            if (value > 20)
+            if (value > 10)
             {
                 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 1); // Red
                 HAL_Delay(200);
