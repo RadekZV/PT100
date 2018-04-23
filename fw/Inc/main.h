@@ -51,10 +51,10 @@
 
 #define SPI1_DRDY_Pin GPIO_PIN_1
 #define SPI1_DRDY_GPIO_Port GPIOB
-#define GREEN_LED_Pin GPIO_PIN_8
-#define GREEN_LED_GPIO_Port GPIOA
-#define RED_LED_Pin GPIO_PIN_10
-#define RED_LED_GPIO_Port GPIOA
+#define LED_GREEN_Pin GPIO_PIN_8
+#define LED_GREEN_GPIO_Port GPIOA
+#define LED_RED_Pin GPIO_PIN_10
+#define LED_RED_GPIO_Port GPIOA
 
 /* ########################## Assert Selection ############################## */
 /**
