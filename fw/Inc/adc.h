@@ -20,6 +20,11 @@
 #define ADC_REG2 0x02
 #define ADC_REG3 0x03
 
+#define ADC_U_REF 1.0
+#define ADC_I_REF 1e-3
+#define ADC_PRECISION 65536
+#define ADC_GAIN 8
+
 void adc_init(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);

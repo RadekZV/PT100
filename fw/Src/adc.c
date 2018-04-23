@@ -1,4 +1,5 @@
 #include "adc.h"
+#include <stdio.h>
 
 #define ADC_SPI_TIMEOUT 0xFFFF
 
@@ -40,7 +41,7 @@ HAL_StatusTypeDef adc_reset(void)
 HAL_StatusTypeDef adc_start(void)
 {
     uint8_t config[] = { ADC_CMD_START };
-    HAL_Delay(1);
+    //HAL_Delay(1);
     return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
 
@@ -51,18 +52,43 @@ HAL_StatusTypeDef adc_read_data(void)
     return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
 
+uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
+{
+    char buffer[10];
+    double voltage;
+    double resistance;
+    uint16_t r;
+    uint16_t sample = (((uint16_t)msb) << 8) + lsb;
+
+    voltage = ((ADC_U_REF / ADC_PRECISION) * ((double)sample)) / ADC_GAIN;
+    resistance = voltage / ADC_I_REF;
+    r = resistance;
+
+    itoa(sample, buffer, 10);
+    debug("                        sample: ");
+    debug(buffer);
+    itoa(r, buffer, 10);
+    debug("      res: ");
+    debug(buffer);
+    debug("\n");
+    return r;
+}
+
 void adc_get_sample(void)
 {
     HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
     debug("SPI start receive\n");
     //adc_read_data();
-    HAL_Delay(1);
+    //HAL_Delay(1);
     if (HAL_SPI_Receive(&hspi1, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
+    {
         debug("SPI start receive ok\n");
+        adc_calculate_temp(adc_rx_data[0], adc_rx_data[1]);
+    }
     else
         debug("SPI start receive error\n");
     HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0);
-    //adc_start();
+    adc_start();
 }
 
 void adc_init(void)
