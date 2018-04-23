@@ -36,7 +36,7 @@
 #include "stm32f0xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "adc.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -135,6 +135,7 @@ void EXTI0_1_IRQHandler(void)
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
     /* USER CODE BEGIN EXTI0_1_IRQn 1 */
     HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+    adc_get_sample();
     /* USER CODE END EXTI0_1_IRQn 1 */
 }
 

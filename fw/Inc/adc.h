@@ -21,5 +21,6 @@
 
 void adc_init(void);
 HAL_StatusTypeDef adc_start(void);
+void adc_get_sample(void);
 
 #endif // __ADC_INCLUDED__

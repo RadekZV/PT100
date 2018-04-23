@@ -1,14 +1,18 @@
 #include "adc.h"
 
+#define ADC_SPI_TIMEOUT 0xFFFF
+
 extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart1;
+
+uint8_t adc_rx_data[2];
 
 HAL_StatusTypeDef adc_set_reg(uint8_t reg, uint8_t value)
 {
     uint8_t config[2];
     config[0] = ADC_CMD_WREG | (reg << 2); // nn + 1
     config[1] = value;
-    return HAL_SPI_Transmit(&hspi1, config, 2, 0xFFFF);
+    return HAL_SPI_Transmit(&hspi1, config, 2, ADC_SPI_TIMEOUT);
 }
 
 HAL_StatusTypeDef adc_set_regs(uint8_t start_reg, uint8_t number_reg, uint8_t values[])
@@ -23,7 +27,12 @@ HAL_StatusTypeDef adc_set_regs(uint8_t start_reg, uint8_t number_reg, uint8_t va
         config[i + 1] = values[i];
     }
 
-    return HAL_SPI_Transmit(&hspi1, config, number_reg + 1, 0xFFFF);
+    return HAL_SPI_Transmit(&hspi1, config, number_reg + 1, ADC_SPI_TIMEOUT);
+}
+
+void adc_get_sample(void)
+{
+    HAL_SPI_Receive(&hspi1, adc_rx_data, 2, ADC_SPI_TIMEOUT);
 }
 
 void adc_init(void)
@@ -58,5 +67,5 @@ HAL_StatusTypeDef adc_start(void)
 {
     uint8_t config[] = { ADC_CMD_START };
     HAL_Delay(100);
-    return HAL_SPI_Transmit(&hspi1, config, 1, 0xFFFF);
+    return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
