@@ -40,7 +40,7 @@
 #include "stm32f0xx_hal.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "adc.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -84,13 +84,6 @@ PUTCHAR_PROTOTYPE
 
 /* USER CODE END 0 */
 
-
-void ADS1120_init(void)
-{
-    // send WREG
-	// send 4 bytes
-	//HAL_SPI_Transmit() vrací HAL_OK kontrolovat a vypisovat chyby na uart
-}
 
 /**
  * @brief  The application entry point.
