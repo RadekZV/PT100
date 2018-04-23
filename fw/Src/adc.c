@@ -45,7 +45,10 @@ void adc_init(void)
     }
 }
 
-void adc_start(void)
+HAL_StatusTypeDef adc_start(void)
 {
-    ;
+		uint8_t config[] = {ADC_CMD_START};  
+		HAL_Delay(100);
+		return HAL_SPI_Transmit(&hspil, config, 1, 0xFFFF);
+		
 }
