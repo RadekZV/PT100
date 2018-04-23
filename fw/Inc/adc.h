@@ -6,6 +6,7 @@
 #define __ADC_INCLUDED__
 
 #include "stm32f0xx_hal.h"
+#include "utils.h"
 
 #define ADC_CMD_RESET     0x06 // 0000 011x - reset device
 #define ADC_CMD_START     0x08 // 0000 100x - start or restart conversion

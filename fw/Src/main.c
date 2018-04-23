@@ -41,6 +41,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "adc.h"
+#include "utils.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -50,9 +51,7 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t bufftx[10]  = "Hello!!\n";
-uint8_t bufftx1[10] = "AHOJ!!\n";
-uint16_t tDelay     = 200;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,17 +62,7 @@ static void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-#ifdef __GNUC__
-# define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-# define PUTCHAR_PROTOTYPE int fputc(int ch, FILE * f)
-#endif /* __GNUC__ */
-PUTCHAR_PROTOTYPE
-{
-    HAL_UART_Transmit(&huart1, (uint8_t *) &ch, 1, 0xFFFF);
 
-    return ch;
-}
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -113,7 +102,8 @@ int main(void)
     MX_SPI1_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
-    printf("POWER ON\n");
+    debug("POWER ON\n");
+    //HAL_UART_Transmit(&huart1, "AHOJ", 4, 0xFFFF);
 
     adc_init();
     /* USER CODE END 2 */
@@ -266,7 +256,7 @@ static void MX_GPIO_Init(void)
 
     /* EXTI interrupt init*/
     HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+    //HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 
 /* USER CODE BEGIN 4 */

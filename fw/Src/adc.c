@@ -3,7 +3,6 @@
 #define ADC_SPI_TIMEOUT 0xFFFF
 
 extern SPI_HandleTypeDef hspi1;
-extern UART_HandleTypeDef huart1;
 
 uint8_t adc_rx_data[2];
 
@@ -30,9 +29,40 @@ HAL_StatusTypeDef adc_set_regs(uint8_t start_reg, uint8_t number_reg, uint8_t va
     return HAL_SPI_Transmit(&hspi1, config, number_reg + 1, ADC_SPI_TIMEOUT);
 }
 
+
+HAL_StatusTypeDef adc_reset(void)
+{
+    uint8_t config[] = { ADC_CMD_RESET };
+    HAL_Delay(1);
+    return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
+}
+
+HAL_StatusTypeDef adc_start(void)
+{
+    uint8_t config[] = { ADC_CMD_START };
+    HAL_Delay(1);
+    return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
+}
+
+
+HAL_StatusTypeDef adc_read_data(void)
+{
+    uint8_t config[] = { ADC_CMD_RDATA };
+    return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
+}
+
 void adc_get_sample(void)
 {
-    HAL_SPI_Receive(&hspi1, adc_rx_data, 2, ADC_SPI_TIMEOUT);
+    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
+    debug("SPI start receive\n");
+    //adc_read_data();
+    HAL_Delay(1);
+    if (HAL_SPI_Receive(&hspi1, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
+        debug("SPI start receive ok\n");
+    else
+        debug("SPI start receive error\n");
+    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0);
+    //adc_start();
 }
 
 void adc_init(void)
@@ -44,28 +74,32 @@ void adc_init(void)
         0x80  // 1000 0000
     };
 
+
+    if (adc_reset() != HAL_OK)
+    {
+        debug("SPI reset error\n\r");
+    }
+    else
+    {
+        debug("SPI reset ok\n\r");
+    }
+
     if (adc_set_regs(ADC_REG0, 4, config) != HAL_OK)
     {
-        printf("SPI config error\n\r");
+        debug("SPI config error\n\r");
     }
     else
     {
-        printf("SPI config ok\n\r");
+        debug("SPI config ok\n\r");
     }
 
-		if (adc_start() != HAL_OK)
+	if (adc_start() != HAL_OK)
     {
-        printf("SPI start error\n\r");
+        debug("SPI start error\n\r");
     }
     else
     {
-        printf("SPI start ok\n\r");
+        debug("SPI start ok\n\r");
+        HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
     }
-}
-
-HAL_StatusTypeDef adc_start(void)
-{
-    uint8_t config[] = { ADC_CMD_START };
-    HAL_Delay(100);
-    return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
