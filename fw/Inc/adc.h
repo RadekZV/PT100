@@ -22,8 +22,8 @@
 
 #define ADC_U_REF 1.0
 #define ADC_I_REF 1e-3
-#define ADC_PRECISION 65536
-#define ADC_GAIN 8
+#define ADC_PRECISION 32768
+#define ADC_GAIN 4
 
 void adc_init(void);
 HAL_StatusTypeDef adc_start(void);

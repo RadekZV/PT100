@@ -60,18 +60,34 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
     uint16_t r;
     uint16_t sample = (((uint16_t)msb) << 8) + lsb;
 
-    voltage = ((ADC_U_REF / ADC_PRECISION) * ((double)sample)) / ADC_GAIN;
-    resistance = voltage / ADC_I_REF;
-    r = resistance;
+		if(sample > 9948 && sample <24593)
+		{
+			voltage = ((ADC_U_REF / ADC_PRECISION) * ((double)sample)) / ADC_GAIN;	// max U = 0,188 V
+			resistance = voltage / ADC_I_REF;																				
+			r = resistance;										// max R = 250ohm >> max temperature = 240 °C
+			
+			itoa(sample, buffer, 10);
+			debug("                        sample: ");
+			debug(buffer);
+			itoa(r, buffer, 10);
+			debug("      res: ");
+			debug(buffer);
+			debug("\n");
+		}
+    else
+		{
+			debug("Chyba!!!\n");
+			debug("Rozpojeni Zkrat Porucha\n");
+		}
 
-    itoa(sample, buffer, 10);
+   /* itoa(sample, buffer, 10);
     debug("                        sample: ");
     debug(buffer);
     itoa(r, buffer, 10);
     debug("      res: ");
     debug(buffer);
     debug("\n");
-    return r;
+    return r; */
 }
 
 void adc_get_sample(void)
@@ -94,7 +110,7 @@ void adc_get_sample(void)
 void adc_init(void)
 {
     uint8_t config[] = {
-        0x06, // 0000 0110 - zápis do reg 0
+        0x04, // 0000 0100 - zápis do reg 0
         0x04, // 0000 0100
         0x46, // 0100 0110
         0x80  // 1000 0000
