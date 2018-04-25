@@ -29,6 +29,7 @@
 #define ADC_LIMIT_MAX 24593
 
 void adc_init(void);
+HAL_StatusTypeDef adc_reset(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);
 
