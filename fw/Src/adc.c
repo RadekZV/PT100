@@ -75,7 +75,7 @@ double adc_res_to_temp(double res)
 
 uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
-    char buffer[10];
+    char buffer[80];
     double voltage, resistance, temperature;
     int16_t t      = 0, r = 0;
     int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
@@ -90,14 +90,10 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
         t = (int16_t) temperature;
 
 
-        debug("\t\t\t\t");
-        itoa(r, buffer, 10);
+        snprintf(buffer, 80, "\t\t\t\t%4d Ohm", r);
         debug(buffer);
-        debug(" Ohm\t");
-        itoa(t, buffer, 10);
-        debug("\t");
+        snprintf(buffer, 80, "\t%+4d dC\n", t);
         debug(buffer);
-        debug(" dC\n");
     }
     else
     {
