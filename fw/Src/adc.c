@@ -6,7 +6,10 @@
 
 extern SPI_HandleTypeDef hspi1;
 
-uint8_t adc_rx_data[2];
+
+#define ADC_BUFFER_SIZE 2
+uint8_t adc_rx_data[ADC_BUFFER_SIZE];
+uint8_t adc_tx_data[ADC_BUFFER_SIZE];
 
 HAL_StatusTypeDef adc_set_reg(uint8_t reg, uint8_t value)
 {
@@ -35,14 +38,17 @@ HAL_StatusTypeDef adc_reset(void)
 {
     uint8_t config[] = { ADC_CMD_RESET };
     HAL_Delay(1);
+    HAL_NVIC_DisableIRQ(EXTI0_1_IRQn);
     return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
 
 HAL_StatusTypeDef adc_start(void)
 {
     uint8_t config[] = { ADC_CMD_START };
-    // HAL_Delay(1);
-    return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
+    HAL_StatusTypeDef status;
+    status = HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
+    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+    return status;
 }
 
 HAL_StatusTypeDef adc_read_data(void)
@@ -79,15 +85,6 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
         debug("Rozpojeni Zkrat Porucha\n");
     }
 
-    /* itoa(sample, buffer, 10);
-     * debug("                        sample: ");
-     * debug(buffer);
-     * itoa(r, buffer, 10);
-     * debug("      res: ");
-     * debug(buffer);
-     * debug("\n");
-     */
-
      return r;
 }
 
@@ -97,7 +94,7 @@ void adc_get_sample(void)
     debug("SPI start receive\n");
     // adc_read_data();
     // HAL_Delay(1);
-    if (HAL_SPI_Receive(&hspi1, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
+    if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
         debug("SPI start receive ok\n");
         adc_calculate_temp(adc_rx_data[0], adc_rx_data[1]);
@@ -107,11 +104,20 @@ void adc_get_sample(void)
         debug("SPI start receive error\n");
     }
     HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0);
-    adc_start();
+    //adc_start();
+}
+
+void adc_buffer_clear(uint8_t buffer[])
+{
+    for (uint16_t i = 0; i < ADC_BUFFER_SIZE; i++)
+        buffer[i] = 0;
 }
 
 void adc_init(void)
 {
+    adc_buffer_clear(adc_rx_data);
+    adc_buffer_clear(adc_tx_data);
+
     uint8_t config[] = {
         0x04, // 0000 0100 - zápis do reg 0
         0x04, // 0000 0100
@@ -145,6 +151,5 @@ void adc_init(void)
     else
     {
         debug("SPI start ok\n\r");
-        HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
     }
 } /* adc_init */
