@@ -47,6 +47,7 @@ HAL_StatusTypeDef adc_start(void)
     uint8_t config[] = { ADC_CMD_START };
     HAL_StatusTypeDef status;
     status = HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
+    HAL_Delay(100);
     HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
     return status;
 }
@@ -57,27 +58,46 @@ HAL_StatusTypeDef adc_read_data(void)
     return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
 
+double adc_res_to_temp(double res)
+{
+    double a, b;
+
+    a = (res * ADC_PT100_CONST_C7) + ADC_PT100_CONST_C6;
+    a = (a * res) + ADC_PT100_CONST_C5;
+    a = (a * res) + 1;
+    b = (res * ADC_PT100_CONST_C4) + ADC_PT100_CONST_C3;
+    b = (b * res) + ADC_PT100_CONST_C2;
+    b = (b * res) + ADC_PT100_CONST_C1;
+    b = b * res;
+
+    return (b / a) + ADC_PT100_CONST_C0;
+}
+
 uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
     char buffer[10];
-    double voltage;
-    double resistance;
-    uint16_t r = 0;
-    uint16_t sample = (((uint16_t) msb) << 8) + lsb;
+    double voltage, resistance, temperature;
+    int16_t t      = 0, r = 0;
+    int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
 
-    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
+    if (1) // (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
     {
-        voltage    = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN; // max U = 0,188 V
-        resistance = voltage / ADC_I_REF;
-        r = resistance; // max R = 250ohm >> max temperature = 240 °C
+        voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN; // max U = 0,188 V
+        resistance  = voltage / ADC_I_REF;
+        temperature = adc_res_to_temp(resistance);
 
-        itoa(sample, buffer, 10);
-        debug("                        sample: ");
-        debug(buffer);
+        r = resistance; // max R = 250ohm >> max temperature = 240 °C
+        t = (int16_t) temperature;
+
+
+        debug("\t\t\t\t");
         itoa(r, buffer, 10);
-        debug("      res: ");
         debug(buffer);
-        debug("\n");
+        debug(" Ohm\t");
+        itoa(t, buffer, 10);
+        debug("\t");
+        debug(buffer);
+        debug(" dC\n");
     }
     else
     {
@@ -85,15 +105,13 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
         debug("Rozpojeni Zkrat Porucha\n");
     }
 
-     return r;
-}
+    return t;
+} /* adc_calculate_temp */
 
 void adc_get_sample(void)
 {
     HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
     debug("SPI start receive\n");
-    // adc_read_data();
-    // HAL_Delay(1);
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
         debug("SPI start receive ok\n");
@@ -104,7 +122,6 @@ void adc_get_sample(void)
         debug("SPI start receive error\n");
     }
     HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0);
-    //adc_start();
 }
 
 void adc_buffer_clear(uint8_t buffer[])
@@ -119,7 +136,7 @@ void adc_init(void)
     adc_buffer_clear(adc_tx_data);
 
     uint8_t config[] = {
-        0x04, // 0000 0100 - zápis do reg 0
+        ADC_REG0_MUX_AIN0_AIN1 | ADC_REG0_GAIN4 | ADC_REG0_PGA_BYPASS_DISABLE,
         0x04, // 0000 0100
         0x46, // 0100 0110
         0x80  // 1000 0000
