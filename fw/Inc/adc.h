@@ -25,6 +25,9 @@
 #define ADC_PRECISION 32768
 #define ADC_GAIN 4
 
+#define ADC_LIMIT_MIN 9948
+#define ADC_LIMIT_MAX 24593
+
 void adc_init(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);

@@ -103,7 +103,7 @@ int main(void)
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
     debug("POWER ON\n");
-    //HAL_UART_Transmit(&huart1, "AHOJ", 4, 0xFFFF);
+    // HAL_UART_Transmit(&huart1, "AHOJ", 4, 0xFFFF);
 
     adc_init();
     /* USER CODE END 2 */
@@ -256,7 +256,7 @@ static void MX_GPIO_Init(void)
 
     /* EXTI interrupt init*/
     HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-    //HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 }
 
 /* USER CODE BEGIN 4 */
