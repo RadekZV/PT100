@@ -4,12 +4,11 @@
 
 #define ADC_SPI_TIMEOUT 0xFFFF
 
-extern SPI_HandleTypeDef hspi1;
-
-
 #define ADC_BUFFER_SIZE 2
 uint8_t adc_rx_data[ADC_BUFFER_SIZE];
 uint8_t adc_tx_data[ADC_BUFFER_SIZE];
+
+extern SPI_HandleTypeDef hspi1;
 
 HAL_StatusTypeDef adc_set_reg(uint8_t reg, uint8_t value)
 {
