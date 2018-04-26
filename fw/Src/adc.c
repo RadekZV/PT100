@@ -110,16 +110,14 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
     int16_t t      = 0, r = 0;
     int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
 
-    if (1) // (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
+    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
     {
-        voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN; // max U = 0,188 V
+        voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
         resistance  = voltage / ADC_I_REF;
-        temperature = adc_res_to_temp(resistance);
-        adc_average_temp(temperature);
+        temperature = adc_average_temp(adc_res_to_temp(resistance));
 
-        r = resistance; // max R = 250ohm >> max temperature = 240 °C
+        r = resistance;
         t = (int16_t) temperature;
-
 
         snprintf(buffer, 80, "\t\t\t\t%4d Ohm", r);
         debug(buffer);
@@ -128,8 +126,8 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
     }
     else
     {
-        debug("Chyba!!!\n");
-        debug("Rozpojeni Zkrat Porucha\n");
+        debug("Sample value error:\n");
+        debug("\topen or short circuit\n");
     }
 
     return t;
@@ -196,4 +194,4 @@ void adc_init(void)
     {
         debug("SPI start ok\n\r");
     }
-}
+} /* adc_init */
