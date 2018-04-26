@@ -14,6 +14,7 @@ PUTCHAR_PROTOTYPE;
 void debug(char str[]);
 void uart_rx_it_start(void);
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+//void adc_average_sample(uint8_t msb, uint8_t lsb;
 
 extern uint8_t adc_main_loop_flag;
 

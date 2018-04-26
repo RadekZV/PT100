@@ -73,16 +73,19 @@ double adc_res_to_temp(double res)
     return (b / a) + ADC_PT100_CONST_C0;
 }
 
-uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
+uint16_t adc_calculate_temp(uint16_t prumer)
 {
     char buffer[80];
     double voltage, resistance, temperature;
+    uint8_t i;
     int16_t t      = 0, r = 0;
-    int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
-
-    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
+    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //získaný vzorek měření v rozsahu 0 až 2e15
+                                                            //nutno provést dvojkový doplněk, jelikož
+                                                            //měření probíhá pro "záporné hodnoty napětí"
+    //for (i = 0, i  ) napsat funkci na počítání teploty z průměru x hodnot, aby to nebylo v terminálu tak rychlé
+    if (prumer > ADC_LIMIT_MIN && prumer < ADC_LIMIT_MAX)
     {
-        voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN; // max U = 0,188 V
+        voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) prumer)) / ADC_GAIN; // max U = 0,188 V
         resistance  = voltage / ADC_I_REF;
         temperature = adc_res_to_temp(resistance);
 
@@ -112,22 +115,53 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
     }
 
     return t;
-} /* adc_calculate_temp */
+}
 
 void adc_get_sample(void)
 {
-    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
+    //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1); //Blik pri kazdem novem vzorku
     debug("SPI start receive\n");
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
         debug("SPI start receive ok\n");
-        adc_calculate_temp(adc_rx_data[0], adc_rx_data[1]);
+        adc_average_sample(adc_rx_data[0], adc_rx_data[1]);
     }
     else
     {
         debug("SPI start receive error\n");
     }
-    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0);
+    //HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0); //zhasnout led
+}
+
+void adc_average_sample(uint8_t msb, uint8_t lsb)
+{
+    int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //získaný vzorek měření v rozsahu 0 až 2e15
+                                                            //nutno provést dvojkový doplněk, jelikož
+                                                            //měření probíhá pro "záporné hodnoty napětí"
+    uint16_t sample_average ;
+    uint16_t sample_average_stop ;
+    int8_t i ;
+
+    if (i < 20)
+    {
+        sample_average = sample_average + sample;
+        i++;
+    }
+    else if (i=20)
+    {
+        sample_average_stop = sample_average / 21;
+        sample_average = 0;
+        i = 0;
+        adc_calculate_temp(sample_average_stop);
+    }
+    else
+    {
+        i = 0;
+        sample_average = 0;
+        sample_average_stop = 0;
+    }
+    
+    //return sample_average_stop;
 }
 
 void adc_buffer_clear(uint8_t buffer[])
