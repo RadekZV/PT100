@@ -125,8 +125,10 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
     }
     else
     {
+        led_red_on();
         debug("Sample value error:\n");
         debug("\topen or short circuit\n");
+        led_red_off();
     }
 
     return t;
@@ -134,7 +136,7 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
 void adc_get_sample(void)
 {
-    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 1);
+    led_green_on();
     debug("SPI start receive\n");
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
@@ -145,7 +147,7 @@ void adc_get_sample(void)
     {
         debug("SPI start receive error\n");
     }
-    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, 0);
+    led_green_off();
 }
 
 void adc_buffer_clear(uint8_t buffer[])
