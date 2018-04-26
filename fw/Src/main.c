@@ -102,20 +102,15 @@ int main(void)
     MX_SPI1_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
-    debug("POWER ON\n");
-    // HAL_UART_Transmit(&huart1, "AHOJ", 4, 0xFFFF);
-
     uart_rx_it_start();
     adc_init();
+    debug("POWER ON\n");
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-        HAL_Delay(100);
-
         if (adc_main_loop_flag == 'r')
         {
             debug("SPI - RESET");
