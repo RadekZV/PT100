@@ -80,7 +80,7 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
     int16_t t      = 0, r = 0;
     int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
 
-    if (1) // (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
+    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
     {
         voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN; // max U = 0,188 V
         resistance  = voltage / ADC_I_REF;
@@ -88,7 +88,12 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
         r = resistance; // max R = 250ohm >> max temperature = 240 °C
         t = (int16_t) temperature;
-
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 0); // Red
+        /*HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 1); // Green
+        HAL_Delay(200);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, 0); // Green
+        HAL_Delay(200);
+        */
 
         snprintf(buffer, 80, "\t\t\t\t%4d Ohm", r);
         debug(buffer);
@@ -99,6 +104,11 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
     {
         debug("Chyba!!!\n");
         debug("Rozpojeni Zkrat Porucha\n");
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 1); // Red
+        /*HAL_Delay(200);
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, 0); // Red
+        HAL_Delay(200); */
+        
     }
 
     return t;

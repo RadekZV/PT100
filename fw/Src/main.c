@@ -113,8 +113,8 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
-        HAL_Delay(100);
+        //HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);  // blink red led
+        //HAL_Delay(200);
 
         if (adc_main_loop_flag == 'r')
         {
