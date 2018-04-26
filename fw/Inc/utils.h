@@ -3,13 +3,13 @@
 
 #include "stm32f0xx_hal.h"
 
-#ifdef __GNUC__
-# define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-# define PUTCHAR_PROTOTYPE int fputc(int ch, FILE * f)
-#endif /* __GNUC__ */
+#define led_red_on()       HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_SET)
+#define led_red_off()      HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin, GPIO_PIN_RESET)
+#define led_red_toggle()   HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin)
 
-PUTCHAR_PROTOTYPE;
+#define led_green_on()     HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_SET)
+#define led_green_off()    HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, GPIO_PIN_RESET)
+#define led_green_toggle() HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin)
 
 void debug(char str[]);
 void uart_rx_it_start(void);

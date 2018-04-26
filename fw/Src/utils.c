@@ -6,16 +6,9 @@ extern UART_HandleTypeDef huart1;
 uint8_t adc_main_loop_flag = 0;
 uint8_t uart_rx_buffer[2];
 
-PUTCHAR_PROTOTYPE
-{
-    HAL_UART_Transmit(&huart1, (uint8_t *) &ch, 1, 0xFFFF);
-    return ch;
-}
-
-
 void debug(char str[])
 {
-    for (uint8_t i=0; str[i]; i++)
+    for (uint8_t i = 0; str[i]; i++)
         HAL_UART_Transmit(&huart1, (uint8_t *) &str[i], 1, 0xFFFF);
 }
 
