@@ -73,5 +73,7 @@ HAL_StatusTypeDef adc_reset(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);
 void adc_buffer_clear(uint8_t buffer[]);
+double adc_calculate_temp(uint8_t msb, uint8_t lsb);
+double adc_average_temp(double temperature);
 
 #endif // __ADC_INCLUDED__

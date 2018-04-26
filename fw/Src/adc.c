@@ -73,7 +73,37 @@ double adc_res_to_temp(double res)
     return (b / a) + ADC_PT100_CONST_C0;
 }
 
-uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
+double adc_average_temp(double temperature)
+{
+    #define ADC_AVERAGE_BUFFER_SIZE 20
+
+    static double average_buffer[ADC_AVERAGE_BUFFER_SIZE];
+    static uint8_t average_index = 0;
+    static uint8_t average_start = 1;
+
+    uint8_t sum_index;
+    double sum;
+
+    if (average_start)
+    {
+        average_start = 0;
+        for (average_index = 0; average_index < ADC_AVERAGE_BUFFER_SIZE; average_index++)
+            average_buffer[average_index] = 0;
+        average_index = 0;
+    }
+
+    average_buffer[average_index++] = temperature;
+
+    if (average_index >= ADC_AVERAGE_BUFFER_SIZE)
+        average_index = 0;
+
+    for (sum_index = 0, sum = 0; sum_index < ADC_AVERAGE_BUFFER_SIZE; sum_index++)
+        sum += average_buffer[sum_index];
+
+    return sum / ADC_AVERAGE_BUFFER_SIZE;
+}
+
+double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
     char buffer[80];
     double voltage, resistance, temperature;
@@ -85,6 +115,7 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
         voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN; // max U = 0,188 V
         resistance  = voltage / ADC_I_REF;
         temperature = adc_res_to_temp(resistance);
+        adc_average_temp(temperature);
 
         r = resistance; // max R = 250ohm >> max temperature = 240 °C
         t = (int16_t) temperature;
@@ -102,7 +133,7 @@ uint16_t adc_calculate_temp(uint8_t msb, uint8_t lsb)
     }
 
     return t;
-} /* adc_calculate_temp */
+}
 
 void adc_get_sample(void)
 {
@@ -165,4 +196,4 @@ void adc_init(void)
     {
         debug("SPI start ok\n\r");
     }
-} /* adc_init */
+}
