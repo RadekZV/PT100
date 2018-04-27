@@ -104,8 +104,8 @@ double adc_average_temp(double temperature)
 
 double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
-    #define ADC_MESSAGE_REDUCTION 30
-    static uint8_t message_reduction = 0;
+    #define ADC_MESSAGE_REDUCTION 10
+    static uint16_t message_reduction = 0;
 
     char buffer[80];
     double voltage, resistance, temperature;
@@ -150,10 +150,10 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 void adc_get_sample(void)
 {
     led_green_on();
-    debug("SPI start receive\n");
+    //debug("SPI start receive\n");
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
-        debug("SPI start receive ok\n");
+        //debug("SPI start receive ok\n");
         adc_calculate_temp(adc_rx_data[0], adc_rx_data[1]);
     }
     else
