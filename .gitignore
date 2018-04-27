@@ -54,7 +54,6 @@ dkms.conf
 
 
 # STM32
-*.s
 *.crf
 *.lnp
 *.lst
@@ -62,7 +61,9 @@ dkms.conf
 *.axf
 *.htm
 *.bin
-*Debug*
+*.mxproject
+*Debug/*
+*Release/*
 *build/*
 
 # Atom
