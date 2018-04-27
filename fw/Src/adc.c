@@ -104,10 +104,15 @@ double adc_average_temp(double temperature)
 
 double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
+    #define ADC_MESSAGE_REDUCTION 30
+    static uint8_t message_reduction = 0;
+
     char buffer[80];
     double voltage, resistance, temperature;
     int16_t t      = 0, r = 0;
     int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
+
+    message_reduction++;
 
     if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
     {
@@ -118,21 +123,29 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
         r = resistance;
         t = (int16_t) temperature;
 
-        snprintf(buffer, 80, "\t\t\t\t%4d Ohm", r);
-        debug(buffer);
-        snprintf(buffer, 80, "\t%+4d dC\n", t);
-        debug(buffer);
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            message_reduction = 0;
+            snprintf(buffer, 80, "\t\t\t\t%4d Ohm", r);
+            debug(buffer);
+            snprintf(buffer, 80, "\t%+4d dC\n", t);
+            debug(buffer);
+        }
     }
     else
     {
         led_red_on();
-        debug("Sample value error:\n");
-        debug("\topen or short circuit\n");
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            message_reduction = 0;
+            debug("Sample value error:\n");
+            debug("\topen or short circuit\n");
+        }
         led_red_off();
     }
 
     return t;
-}
+} /* adc_calculate_temp */
 
 void adc_get_sample(void)
 {
