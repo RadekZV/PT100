@@ -109,7 +109,7 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
     char buffer[80];
     double voltage, resistance, temperature;
-    int16_t t      = 0, r = 0;
+    double t      = 0, r = 0;
     int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
 
     message_reduction++;
@@ -121,19 +121,21 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
         temperature = adc_average_temp(adc_res_to_temp(resistance));
 
         r = resistance;
-        t = (int16_t) temperature;
+        t = temperature;
 
         if (message_reduction == ADC_MESSAGE_REDUCTION)
         {
+            led_green_on();
             message_reduction = 0;
-            snprintf(buffer, 80, "\t\t\t\t%4d Ohm", r);
+            snprintf(buffer, 80, "\t\t\t\t%4.4f Ohm", r);
             debug(buffer);
-            snprintf(buffer, 80, "\t%+4d dC\n", t);
+            snprintf(buffer, 80, "\t%+4.4f dC\n", t);
             debug(buffer);
+            
         }
     }
     else
-    {
+    {   led_green_off();
         led_red_on();
         if (message_reduction == ADC_MESSAGE_REDUCTION)
         {
@@ -149,7 +151,7 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
 void adc_get_sample(void)
 {
-    led_green_on();
+    //led_green_on();
     //debug("SPI start receive\n");
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
@@ -160,7 +162,7 @@ void adc_get_sample(void)
     {
         debug("SPI start receive error\n");
     }
-    led_green_off();
+    //led_green_off();
 }
 
 void adc_buffer_clear(uint8_t buffer[])
