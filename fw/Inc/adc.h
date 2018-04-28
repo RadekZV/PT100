@@ -8,6 +8,7 @@
 #include "stm32f0xx_hal.h"
 #include "utils.h"
 
+// main commands for ADS1120
 #define ADC_CMD_RESET               0x06 // 0000 011x - reset device
 #define ADC_CMD_START               0x08 // 0000 100x - start or restart conversion
 #define ADC_CMD_POWERDOWN           0x02 // 0000 001x - power-down
@@ -15,11 +16,13 @@
 #define ADC_CMD_RREG                0x20 // 0010 rrnn - read nn register starting at address rr
 #define ADC_CMD_WREG                0x40 // 0100 rrnn - write nn register starting at address rr
 
+//designation registers
 #define ADC_REG0                    0x00 // 0000 0000
 #define ADC_REG1                    0x01 // 0000 0001
 #define ADC_REG2                    0x02 // 0000 0010
 #define ADC_REG3                    0x03 // 0000 0011
 
+//setings for REG0
 #define ADC_REG0_MUX_AIN0_AIN1      0x00 // 0000 0000
 #define ADC_REG0_MUX_AIN0_AIN2      0x10 // 0001 0000
 #define ADC_REG0_MUX_AIN0_AIN3      0x20 // 0010 0000
@@ -49,13 +52,36 @@
 #define ADC_REG0_PGA_BYPASS_ENABLE  0x00 // 0000 0000
 #define ADC_REG0_PGA_BYPASS_DISABLE 0x01 // 0000 0001
 
+//setings for REG1
+#define ADC_REG1_DR_NORM_MODE_20SPS	0x00 // 0000 0000
 
+#define ADC_REG1_MODE_NORMAL		0x00 // 0000 0000
+#define ADC_REG1_MODE_DUTY_CYCLE	0x08 // 0000 1000
+#define ADC_REG1_MODE_TURBO			0x10 // 0001 0000
+#define ADC_REG1_MODE_RESERVED		0x18 // 0001 1000
+
+#define ADC_REG1_CM_SINGLE			0x00 // 0000 0000
+#define ADC_REG1_CM_CONTINUOUS		0x04 // 0000 0100
+
+#define ADC_REG1_TS_DISABLE			0x00 // 0000 0000
+#define ADC_REG1_TS_ENABLE			0x02 // 0000 0010
+
+#define ADC_REG1_BCS_OFF			0x00 // 0000 0000
+#define ADC_REG1_BCS_ON				0x01 // 0000 0001
+
+//setings for REG2
+
+//setings for REG3
+
+//constant for calculate impedance
 #define ADC_U_REF     1.0
 #define ADC_I_REF     1e-3
 #define ADC_PRECISION 32768
 #define ADC_GAIN      4
+#define ADC_LIMIT_MIN      9100
+#define ADC_LIMIT_MAX      30147
 
-
+//constant for calculate temperature
 #define ADC_PT100_CONST_C0 -245.19
 #define ADC_PT100_CONST_C1 2.5293
 #define ADC_PT100_CONST_C2 -0.066046
@@ -65,8 +91,7 @@
 #define ADC_PT100_CONST_C6 1.6883E-3
 #define ADC_PT100_CONST_C7 -1.3601E-6
 
-#define ADC_LIMIT_MIN      9948
-#define ADC_LIMIT_MAX      24593
+
 
 void adc_init(void);
 HAL_StatusTypeDef adc_reset(void);

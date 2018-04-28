@@ -6,13 +6,13 @@ extern UART_HandleTypeDef huart1;
 uint8_t adc_main_loop_flag = 0;
 uint8_t uart_rx_buffer[2];
 
-void debug(char str[])
+void debug(char str[])      // function for print text on uart
 {
     for (uint8_t i = 0; str[i]; i++)
         HAL_UART_Transmit(&huart1, (uint8_t *) &str[i], 1, 0xFFFF);
 }
 
-void uart_rx_it_start(void)
+void uart_rx_it_start(void)     // start uart
 {
     HAL_UART_Receive_IT(&huart1, uart_rx_buffer, 1);
 }

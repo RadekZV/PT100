@@ -10,6 +10,7 @@ uint8_t adc_tx_data[ADC_BUFFER_SIZE];
 
 extern SPI_HandleTypeDef hspi1;
 
+// setting one register
 HAL_StatusTypeDef adc_set_reg(uint8_t reg, uint8_t value)
 {
     uint8_t config[2];
@@ -18,6 +19,7 @@ HAL_StatusTypeDef adc_set_reg(uint8_t reg, uint8_t value)
     return HAL_SPI_Transmit(&hspi1, config, 2, ADC_SPI_TIMEOUT);
 }
 
+//setting more register
 HAL_StatusTypeDef adc_set_regs(uint8_t start_reg, uint8_t number_reg, uint8_t values[])
 {
     uint8_t config[5];
@@ -30,33 +32,37 @@ HAL_StatusTypeDef adc_set_regs(uint8_t start_reg, uint8_t number_reg, uint8_t va
         config[i + 1] = values[i];
     }
 
-    return HAL_SPI_Transmit(&hspi1, config, number_reg + 1, ADC_SPI_TIMEOUT);
+    return HAL_SPI_Transmit(&hspi1, config, number_reg + 1, ADC_SPI_TIMEOUT);   //delay
 }
 
+//reset ADC
 HAL_StatusTypeDef adc_reset(void)
 {
     uint8_t config[] = { ADC_CMD_RESET };
     HAL_Delay(1);
-    HAL_NVIC_DisableIRQ(EXTI0_1_IRQn);
+    HAL_NVIC_DisableIRQ(EXTI0_1_IRQn);  // disable interruption
     return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
 
+//start conversion
 HAL_StatusTypeDef adc_start(void)
 {
     uint8_t config[] = { ADC_CMD_START };
     HAL_StatusTypeDef status;
     status = HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
     HAL_Delay(100);
-    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+    HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);   // enable interruption
     return status;
 }
 
+// function for read measurement data
 HAL_StatusTypeDef adc_read_data(void)
 {
     uint8_t config[] = { ADC_CMD_RDATA };
     return HAL_SPI_Transmit(&hspi1, config, 1, ADC_SPI_TIMEOUT);
 }
 
+//function for conversion impedance to temperature
 double adc_res_to_temp(double res)
 {
     double a, b;
@@ -72,6 +78,7 @@ double adc_res_to_temp(double res)
     return (b / a) + ADC_PT100_CONST_C0;
 }
 
+//function for calculate average temperature from X sample
 double adc_average_temp(double temperature)
 {
     #define ADC_AVERAGE_BUFFER_SIZE 20
@@ -102,9 +109,10 @@ double adc_average_temp(double temperature)
     return sum / ADC_AVERAGE_BUFFER_SIZE;
 }
 
+//function for calculate temperature from measurement sample
 double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
-    #define ADC_MESSAGE_REDUCTION 10
+    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
     static uint16_t message_reduction = 0;
 
     char buffer[80];
@@ -114,7 +122,8 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
     message_reduction++;
 
-    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)
+    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+                                                                //measurement sample
     {
         voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
         resistance  = voltage / ADC_I_REF;
@@ -134,7 +143,8 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
             
         }
     }
-    else
+    else    // if range is outside setting temperature (-50 to +250 °C)
+            // is evaluated short or open circuit
     {   led_green_off();
         led_red_on();
         if (message_reduction == ADC_MESSAGE_REDUCTION)
@@ -147,11 +157,10 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
     }
 
     return t;
-} /* adc_calculate_temp */
-
+}
+//function for receive sample from ADC
 void adc_get_sample(void)
 {
-    //led_green_on();
     //debug("SPI start receive\n");
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
@@ -171,14 +180,16 @@ void adc_buffer_clear(uint8_t buffer[])
         buffer[i] = 0;
 }
 
+//function for initialization ADC
 void adc_init(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
-
+    
+    //setting registers
     uint8_t config[] = {
         ADC_REG0_MUX_AIN0_AIN1 | ADC_REG0_GAIN4 | ADC_REG0_PGA_BYPASS_DISABLE,
-        0x04, // 0000 0100
+        ADC_REG1_DR_NORM_MODE_20SPS | ADC_REG1_MODE_NORMAL | ADC_REG1_CM_CONTINUOUS | ADC_REG1_TS_DISABLE | ADC_REG1_BCS_OFF, //0x04, // 0000 0100
         0x46, // 0100 0110
         0x80  // 1000 0000
     };
@@ -210,4 +221,4 @@ void adc_init(void)
     {
         debug("SPI start ok\n\r");
     }
-} /* adc_init */
+}

@@ -102,8 +102,8 @@ int main(void)
     MX_SPI1_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
-    uart_rx_it_start();
-    adc_init();
+    uart_rx_it_start();       // initialization uart
+    adc_init();               // initialization AD converter ADS1120
     debug("POWER ON\n");
     /* USER CODE END 2 */
 
@@ -111,13 +111,13 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        if (adc_main_loop_flag == 'r')
+        if (adc_main_loop_flag == 'r')  // stop communication
         {
             debug("SPI - RESET");
             adc_reset();
             adc_main_loop_flag = 0;
         }
-        else if (adc_main_loop_flag == 's')
+        else if (adc_main_loop_flag == 's') // start communication
         {
             debug("SPI - INIT -> START");
             adc_init();
