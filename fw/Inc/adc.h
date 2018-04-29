@@ -70,8 +70,51 @@
 #define ADC_REG1_BCS_ON				0x01 // 0000 0001
 
 //setings for REG2
+#define ADC_REG2_VREF_INTERNAL               0x00 // 0000 0000
+#define ADC_REG2_VREF_EXTERNAL_REFP0_REFN0   0x40 // 0100 0000
+#define ADC_REG2_VREF_EXTERNAL_REFP1_REFN1   0x80 // 1000 0000
+#define ADC_REG2_VREF_ANALOG                 0xC0 // 1100 0000
+
+#define ADC_REG2_FIR_NO             0x00 // 0000 0000
+#define ADC_REG2_FIR_SIMULTANEOUS   0x10 // 0001 0000
+#define ADC_REG2_FIR_50             0x20 // 0010 0000
+#define ADC_REG2_FIR_60             0x30 // 0011 0000
+
+#define ADC_REG2_PSW_OPEN           0x00 // 0000 0000
+#define ADC_REG2_PSW_CLOSE          0x08 // 0000 1000
+
+#define ADC_REG2_IDAC_OFF           0x00 // 0000 0000
+#define ADC_REG2_IDAC_RESERVED      0x01 // 0000 0001
+#define ADC_REG2_IDAC_50u           0x02 // 0000 0010
+#define ADC_REG2_IDAC_100u          0x03 // 0000 0011
+#define ADC_REG2_IDAC_250u          0x04 // 0000 0100
+#define ADC_REG2_IDAC_500u          0x05 // 0000 0101
+#define ADC_REG2_IDAC_1000u         0x06 // 0000 0110
+#define ADC_REG2_IDAC_1500u         0x07 // 0000 0111
 
 //setings for REG3
+#define ADC_REG3_I1MUX_DISABLED     0x00 // 0000 0000
+#define ADC_REG3_I1MUX_AIN0_REFP1   0x20 // 0010 0000
+#define ADC_REG3_I1MUX_AIN1         0x40 // 0100 0000
+#define ADC_REG3_I1MUX_AIN2         0x60 // 0110 0000
+#define ADC_REG3_I1MUX_AIN3_REFN1   0x80 // 1000 0000
+#define ADC_REG3_I1MUX_REFP0        0xA0 // 1010 0000
+#define ADC_REG3_I1MUX_REFN0        0xC0 // 1100 0000
+#define ADC_REG3_I1MUX_RESERVED     0xE0 // 1110 0000
+
+#define ADC_REG3_I2MUX_DISABLED     0x00 // 0000 0000
+#define ADC_REG3_I2MUX_AIN0_REFP1   0x04 // 0000 0100
+#define ADC_REG3_I2MUX_AIN1         0x08 // 0000 1000
+#define ADC_REG3_I2MUX_AIN2         0x0C // 0000 1100
+#define ADC_REG3_I2MUX_AIN3_REFN1   0x10 // 0001 0000
+#define ADC_REG3_I2MUX_REFP0        0x14 // 0001 0100
+#define ADC_REG3_I2MUX_REFN0        0x18 // 0001 1000
+#define ADC_REG3_I2MUX_RESERVED     0x1C // 0001 1100
+
+#define ADC_REG3_DRDYM_ON           0x00 // 0000 0000
+#define ADC_REG3_DRDYM_Off          0xo2 // 0000 0010
+
+#define ADC_REG3_RESERVED           0x00 // 0000 0000
 
 //constant for calculate impedance
 #define ADC_U_REF     1.0
