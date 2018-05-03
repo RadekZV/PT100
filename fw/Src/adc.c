@@ -138,7 +138,7 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
             message_reduction = 0;
             snprintf(buffer, 80, "\t\t\t\t%4.4f Ohm", r);
             debug(buffer);
-            snprintf(buffer, 80, "\t%+4.4f dC\n", t);
+            snprintf(buffer, 80, "\t%+4.4f °C\n", t);
             debug(buffer);
             
         }
@@ -191,7 +191,7 @@ void adc_init(void)
         ADC_REG0_MUX_AIN0_AIN1 | ADC_REG0_GAIN4 | ADC_REG0_PGA_BYPASS_DISABLE,
         ADC_REG1_DR_NORM_MODE_20SPS | ADC_REG1_MODE_NORMAL | ADC_REG1_CM_CONTINUOUS | ADC_REG1_TS_DISABLE | ADC_REG1_BCS_OFF, //0x04, // 0000 0100
         ADC_REG2_VREF_EXTERNAL_REFP0_REFN0 | ADC_REG2_FIR_NO | ADC_REG2_PSW_OPEN | ADC_REG2_IDAC_1000u, //0x46, // 0100 0110
-        ADC_REG3_I1MUX_AIN3_REFN1 | ADC_REG3_I2MUX_DISABLED | ADC_REG3_DRDYM_ON | ADC_REG3_RESERVED,                                                  0x80  // 1000 0000
+        ADC_REG3_I1MUX_AIN3_REFN1 | ADC_REG3_I2MUX_DISABLED | ADC_REG3_DRDYM_ON | ADC_REG3_RESERVED, //0x80  // 1000 0000
     };
 
 
@@ -221,4 +221,9 @@ void adc_init(void)
     {
         debug("SPI start ok\n\r");
     }
+}
+
+void adc_init2(void)
+{
+    ;
 }

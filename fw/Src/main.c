@@ -49,6 +49,8 @@ SPI_HandleTypeDef hspi1;
 
 UART_HandleTypeDef huart1;
 
+uint8_t i = 0;
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -110,7 +112,25 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)
-    {
+    {   
+        static uint16_t cycle = 0;
+        #define COUNT_CYCLE 50
+        
+        if (cycle == COUNT_CYCLE)
+        {
+            cycle = 0;
+            adc_init2();
+        }
+        else if (cycle == 1)
+        {
+            adc_init();
+        }
+        
+        cycle++;
+        
+        
+        
+        /*
         if (adc_main_loop_flag == 'r')  // stop communication
         {
             debug("SPI - RESET");
@@ -123,10 +143,11 @@ int main(void)
             adc_init();
             adc_main_loop_flag = 0;
         }
+        */
 
-        /* USER CODE END WHILE */
+        
 
-        /* USER CODE BEGIN 3 */
+        
     }
     /* USER CODE END 3 */
 } /* main */
