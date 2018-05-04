@@ -104,7 +104,7 @@ int main(void)
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
     uart_rx_it_start();       // initialization uart
-    adc_init();               // initialization AD converter ADS1120
+    //adc_init();               // initialization AD converter ADS1120
     debug("POWER ON\n");
     /* USER CODE END 2 */
 
@@ -115,10 +115,16 @@ int main(void)
         
 
         adc_init();
-        HAL_Delay(3000);
+        HAL_Delay(8000);
 
         adc_init2();
-        HAL_Delay(3000);
+        HAL_Delay(1000);
+        
+        adc_init3();
+        HAL_Delay(1000);
+        
+        adc_init4();
+        HAL_Delay(1000);
         
        
         /*char buffer[80];
