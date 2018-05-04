@@ -136,6 +136,7 @@ void EXTI0_1_IRQHandler(void)
     HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
     /* USER CODE BEGIN EXTI0_1_IRQn 1 */
     adc_get_sample();
+    //adc_get_sample2();
     /* USER CODE END EXTI0_1_IRQn 1 */
 }
 

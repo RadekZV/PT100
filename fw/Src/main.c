@@ -69,7 +69,6 @@ static void MX_USART1_UART_Init(void);
 
 /* USER CODE BEGIN 0 */
 
-
 /* USER CODE END 0 */
 
 /**
@@ -113,20 +112,38 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {   
+        
+
+        adc_init();
+        HAL_Delay(3000);
+
+        adc_init2();
+        HAL_Delay(3000);
+        
+       
+        /*char buffer[80];
+        //adc_init();
+        //adc_init2();
+        
         static uint16_t cycle = 0;
-        #define COUNT_CYCLE 50
+        #define COUNT_CYCLE 10
         
         if (cycle == COUNT_CYCLE)
         {
             cycle = 0;
             adc_init2();
+            debug("CYKLUS222222\n");
         }
         else if (cycle == 1)
         {
             adc_init();
+            debug("CYKLUS11111\n");
         }
         
         cycle++;
+        
+        snprintf(buffer, 80, "\t%4d cycle\n", cycle );
+        debug(buffer);*/
         
         
         

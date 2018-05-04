@@ -7,6 +7,7 @@
 #define ADC_BUFFER_SIZE 2
 uint8_t adc_rx_data[ADC_BUFFER_SIZE];
 uint8_t adc_tx_data[ADC_BUFFER_SIZE];
+uint8_t stav = 0;
 
 extern SPI_HandleTypeDef hspi1;
 
@@ -117,12 +118,13 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
     char buffer[80];
     double voltage, resistance, temperature;
-    double t      = 0, r = 0;
-    int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;
+    double t      = 0, r = 0, v = 0;
+    int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
+    //int16_t sample = ((((uint16_t) msb) << 8) + lsb);
 
     message_reduction++;
 
-    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
                                                                 //measurement sample
     {
         voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
@@ -131,15 +133,23 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
         r = resistance;
         t = temperature;
-
+        v = voltage;
+        
         if (message_reduction == ADC_MESSAGE_REDUCTION)
         {
             led_green_on();
             message_reduction = 0;
-            snprintf(buffer, 80, "\t\t\t\t%4.4f Ohm", r);
+            snprintf(buffer, 80, "\t%4.4f Ohm", r);
             debug(buffer);
-            snprintf(buffer, 80, "\t%+4.4f °C\n", t);
+            snprintf(buffer, 80, "\t%+4.4f °C", t);
             debug(buffer);
+            snprintf(buffer, 80, "\t%+4.4f V", v);
+            debug(buffer);
+            snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+            debug(buffer);
+            snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+            debug(buffer);
+            
             
         }
     }
@@ -158,14 +168,80 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 
     return t;
 }
+
+
+//function for calculate voltage from measurement sample
+double adc_calculate_voltage(uint8_t msb, uint8_t lsb)
+{
+    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
+    static uint16_t message_reduction = 0;
+
+    char buffer[80];
+    double voltage;
+    double v = 0;
+    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
+    int16_t sample = ((((uint16_t) msb) << 8) + lsb);
+
+    message_reduction++;
+
+    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+                                                                //measurement sample
+    {
+        voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
+        
+        v = voltage;
+        
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            led_green_on();
+            message_reduction = 0;
+            
+            snprintf(buffer, 80, "\t%+4.4f V", v);
+            debug(buffer);
+            //snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+            //debug(buffer);
+            //snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+            //debug(buffer);
+            
+            
+        }
+    }
+    else    // if range is outside setting temperature (-50 to +250 °C)
+            // is evaluated short or open circuit
+    {   led_green_off();
+        led_red_on();
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            message_reduction = 0;
+            debug("Sample value error:\n");
+            debug("\topen or short circuit\n");
+        }
+        led_red_off();
+    }
+
+    return v;
+}
+
 //function for receive sample from ADC
 void adc_get_sample(void)
 {
     //debug("SPI start receive\n");
     if (HAL_SPI_TransmitReceive(&hspi1, adc_tx_data, adc_rx_data, 2, ADC_SPI_TIMEOUT) == HAL_OK)
     {
-        //debug("SPI start receive ok\n");
-        adc_calculate_temp(adc_rx_data[0], adc_rx_data[1]);
+        if (stav == 1)
+        {
+            //debug("SPI start receive ok\n");
+            adc_calculate_temp(adc_rx_data[0], adc_rx_data[1]);
+        }
+        else if (stav == 2)
+        {
+            adc_calculate_voltage(adc_rx_data[0], adc_rx_data[1]);
+        }
+        //char buffer[80];
+        //snprintf(buffer, 80, "\t%+4.0f stav/n", ((double)stav));
+        //debug(buffer);
+        
+        
     }
     else
     {
@@ -173,6 +249,7 @@ void adc_get_sample(void)
     }
     //led_green_off();
 }
+
 
 void adc_buffer_clear(uint8_t buffer[])
 {
@@ -185,7 +262,7 @@ void adc_init(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
-    
+    stav = 1;
     //setting registers
     uint8_t config[] = {
         ADC_REG0_MUX_AIN0_AIN1 | ADC_REG0_GAIN4 | ADC_REG0_PGA_BYPASS_DISABLE,
@@ -225,5 +302,43 @@ void adc_init(void)
 
 void adc_init2(void)
 {
-    ;
+    adc_buffer_clear(adc_rx_data);
+    adc_buffer_clear(adc_tx_data);
+    stav = 2;
+    
+    //setting registers
+    uint8_t config[] = {
+        ADC_REG0_MUX_AIN2_AVSS | ADC_REG0_GAIN4 | ADC_REG0_PGA_BYPASS_DISABLE,
+        ADC_REG1_DR_NORM_MODE_20SPS | ADC_REG1_MODE_NORMAL | ADC_REG1_CM_CONTINUOUS | ADC_REG1_TS_DISABLE | ADC_REG1_BCS_OFF, //0x04, // 0000 0100
+        ADC_REG2_VREF_EXTERNAL_REFP0_REFN0 | ADC_REG2_FIR_NO | ADC_REG2_PSW_OPEN | ADC_REG2_IDAC_1000u, //0x46, // 0100 0110
+        ADC_REG3_I1MUX_AIN3_REFN1 | ADC_REG3_I2MUX_DISABLED | ADC_REG3_DRDYM_ON | ADC_REG3_RESERVED, //0x80  // 1000 0000
+    };
+
+
+    if (adc_reset() != HAL_OK)
+    {
+        debug("SPI reset2 error\n\r");
+    }
+    else
+    {
+        debug("SPI reset2 ok\n\r");
+    }
+
+    if (adc_set_regs(ADC_REG0, 4, config) != HAL_OK)
+    {
+        debug("SPI config2 error\n\r");
+    }
+    else
+    {
+        debug("SPI config2 ok\n\r");
+    }
+
+    if (adc_start() != HAL_OK)
+    {
+        debug("SPI start2 error\n\r");
+    }
+    else
+    {
+        debug("SPI start2 ok\n\r");
+    }
 }

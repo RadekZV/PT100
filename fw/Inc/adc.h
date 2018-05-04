@@ -122,7 +122,7 @@
 #define ADC_PRECISION 32768
 #define ADC_GAIN      4
 #define ADC_LIMIT_MIN      9100
-#define ADC_LIMIT_MAX      30147
+#define ADC_LIMIT_MAX      32700
 
 //constant for calculate temperature
 #define ADC_PT100_CONST_C0 -245.19
@@ -143,6 +143,7 @@ HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);
 void adc_buffer_clear(uint8_t buffer[]);
 double adc_calculate_temp(uint8_t msb, uint8_t lsb);
+double adc_calculate_voltage(uint8_t msb, uint8_t lsb);
 double adc_average_temp(double temperature);
 
 #endif // __ADC_INCLUDED__
