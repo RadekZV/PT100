@@ -126,6 +126,9 @@ int main(void)
         adc_init4();
         HAL_Delay(1000);
         
+        adc_init_internal_temperature();
+        HAL_Delay(3000);
+        
        
         /*char buffer[80];
         //adc_init();

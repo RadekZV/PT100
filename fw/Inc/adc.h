@@ -123,6 +123,7 @@
 #define ADC_GAIN      4
 #define ADC_LIMIT_MIN      9100
 #define ADC_LIMIT_MAX      32700
+#define TEMP_STEP     0.03125
 
 //constant for calculate temperature
 #define ADC_PT100_CONST_C0 -245.19
@@ -140,6 +141,7 @@ void adc_init(void);
 void adc_init2(void);
 void adc_init3(void);
 void adc_init4(void);
+void adc_init_internal_temperature(void);
 HAL_StatusTypeDef adc_reset(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);
