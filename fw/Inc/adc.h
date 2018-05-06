@@ -35,8 +35,8 @@
 #define ADC_REG0_MUX_AIN1_AVSS      0x90 // 1001 0000
 #define ADC_REG0_MUX_AIN2_AVSS      0xA0 // 1010 0000
 #define ADC_REG0_MUX_AIN3_AVSS      0xB0 // 1011 0000
-#define ADC_REG0_MUX_MODE_12        0xC0 // 1100 0000
-#define ADC_REG0_MUX_MODE_13        0xD0 // 1101 0000
+#define ADC_REG0_MUX_MODE_VREF      0xC0 // 1100 0000
+#define ADC_REG0_MUX_MODE_AVDD_AVSS 0xD0 // 1101 0000
 #define ADC_REG0_MUX_MODE_14        0xE0 // 1110 0000
 #define ADC_REG0_MUX_RESERVED       0xF0 // 1111 0000
 
@@ -142,6 +142,8 @@ void adc_init2(void);
 void adc_init3(void);
 void adc_init4(void);
 void adc_init_internal_temperature(void);
+void adc_init_Ucc(void);
+void adc_init_Uref(void);
 HAL_StatusTypeDef adc_reset(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);
@@ -151,5 +153,6 @@ double adc_calculate_voltage(uint8_t msb, uint8_t lsb);
 double adc_calculate_voltage2(uint8_t msb, uint8_t lsb);
 double adc_calculate_voltage3(uint8_t msb, uint8_t lsb);
 double adc_average_temp(double temperature);
+double adc_calculate_Ucc(uint8_t msb, uint8_t lsb);
 
 #endif // __ADC_INCLUDED__
