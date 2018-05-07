@@ -344,39 +344,72 @@ double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
     char buffer[80];
     double i_temp;
     double t = 0;
-    uint16_t sample = ((((uint16_t) msb) << 6) + lsb);
+    uint16_t sample = 65500;//((((uint16_t) msb) << 6) + lsb);
 
     message_reduction++;
 
-    if (sample < TEMP_BORDER)                             //range for calculate temperature from
+    if (sample <= TEMP_BORDER)                             //range for calculate temperature from
                                                           //measurement sample
     {
         i_temp     = ((TEMP_STEP) * ((double) sample));
         
         t = i_temp;
         
-        if (message_reduction == ADC_MESSAGE_REDUCTION2)
+        if (sample >= 3200)
         {
-            led_green_on();
-            message_reduction = 0;
-            
-            snprintf(buffer, 80, "\t Internal temperature plus =  %+4.4f °C", t);
-            debug(buffer);
-            snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
-            debug(buffer);
-            snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
-            debug(buffer);
-            
-            
+            if (message_reduction == ADC_MESSAGE_REDUCTION2)
+            {
+                led_green_off();
+                led_red_on();
+                message_reduction = 0;
+                
+                snprintf(buffer, 80, "\t Internal temperature =  %+4.4f °C", t);
+                debug(buffer);
+                debug("\tTEMPERATURE IS VERY HIGH!!!\n");
+                led_red_off();
+            }
+        }
+        else
+        {
+            if (message_reduction == ADC_MESSAGE_REDUCTION2)
+            {
+                led_green_on();
+                message_reduction = 0;
+                
+                snprintf(buffer, 80, "\t Internal temperature plus =  %+4.4f °C", t);
+                debug(buffer);
+                snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+                debug(buffer);
+                snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+                debug(buffer);
+                
+                
+            }
         }
     }
-    else if ( sample > TEMP_BORDER)
+    else if ( sample > TEMP_BORDER && sample < 16385)
     {   
         sample = ((~(sample)) + 1) - 49152 ;
         i_temp     = ((- TEMP_STEP) * ((double) sample));
         t = i_temp;
         
-        if (message_reduction == ADC_MESSAGE_REDUCTION2)
+        if (sample > 1920)
+        {
+            if (message_reduction == ADC_MESSAGE_REDUCTION2)
+            {
+                led_green_off();
+                led_red_on();
+                message_reduction = 0;
+                
+                snprintf(buffer, 80, "\t Internal temperature =  %+4.4f °C", t);
+                debug(buffer);
+                debug("\tTEMPERATURE IS VERY LOW!!!\n");
+                led_red_off();
+            }
+        }
+        else
+        {
+           if (message_reduction == ADC_MESSAGE_REDUCTION2)
         {
             led_green_on();
             message_reduction = 0;
@@ -388,7 +421,9 @@ double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
             snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
             debug(buffer);
                
+        } 
         }
+        
         
     }
     else    
