@@ -344,12 +344,12 @@ double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
     char buffer[80];
     double i_temp;
     double t = 0;
-    int16_t sample = ((((uint16_t) msb) << 6) + lsb);
+    uint16_t sample = ((((uint16_t) msb) << 6) + lsb);
 
     message_reduction++;
 
-    if (1)//(sample < TEMP_BORDER)//udelat merení do minusu(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
-                                                                //measurement sample
+    if (sample < TEMP_BORDER)                             //range for calculate temperature from
+                                                          //measurement sample
     {
         i_temp     = ((TEMP_STEP) * ((double) sample));
         
@@ -371,8 +371,8 @@ double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
         }
     }
     else if ( sample > TEMP_BORDER)
-    {
-        sample = ~(sample) + 1;
+    {   
+        sample = ((~(sample)) + 1) - 49152 ;
         i_temp     = ((- TEMP_STEP) * ((double) sample));
         t = i_temp;
         
