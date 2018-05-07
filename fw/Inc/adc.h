@@ -118,12 +118,24 @@
 
 //constant for calculate impedance
 #define ADC_U_REF     1.0
+#define ADC_U_REF_INTER     2.048
 #define ADC_I_REF     1e-3
 #define ADC_PRECISION 32768
 #define ADC_GAIN      4
-#define ADC_LIMIT_MIN      9100
-#define ADC_LIMIT_MAX      32700
+#define ADC_LIMIT_MIN      9000
+#define ADC_LIMIT_MAX      27600
+#define ADC_EXTREF_MIN     23600
+#define ADC_EXTREF_MAX     30150
+#define ADC_AIN0_MIN     17000
+#define ADC_AIN0_MAX     22000
+#define ADC_AIN1_MIN     19000
+#define ADC_AIN1_MAX     25000
+#define ADC_UNAP_MIN     12000
+#define ADC_UNAP_MAX     14000
+#define ADC_UREF_MIN     3200
+#define ADC_UREF_MAX     4800
 #define TEMP_STEP     0.03125
+#define TEMP_BORDER     8192
 
 //constant for calculate temperature
 #define ADC_PT100_CONST_C0 -245.19
@@ -138,12 +150,12 @@
 
 
 void adc_init(void);
-void adc_init2(void);
-void adc_init3(void);
-void adc_init4(void);
+void adc_init_extref(void);
+void adc_init_ain1(void);
+void adc_init_ain0(void);
 void adc_init_internal_temperature(void);
-void adc_init_Ucc(void);
-void adc_init_Uref(void);
+void adc_init_unap(void);
+void adc_init_uref(void);
 HAL_StatusTypeDef adc_reset(void);
 HAL_StatusTypeDef adc_start(void);
 void adc_get_sample(void);
@@ -153,6 +165,6 @@ double adc_calculate_voltage(uint8_t msb, uint8_t lsb);
 double adc_calculate_voltage2(uint8_t msb, uint8_t lsb);
 double adc_calculate_voltage3(uint8_t msb, uint8_t lsb);
 double adc_average_temp(double temperature);
-double adc_calculate_Ucc(uint8_t msb, uint8_t lsb);
+double adc_calculate_unap(uint8_t msb, uint8_t lsb);
 
 #endif // __ADC_INCLUDED__

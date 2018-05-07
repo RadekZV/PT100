@@ -117,23 +117,28 @@ int main(void)
         adc_init();
         HAL_Delay(8000);
 
-        adc_init2();
+        adc_init_extref();
         HAL_Delay(1000);
         
-        adc_init3();
+        adc_init_ain0();
         HAL_Delay(1000);
         
-        adc_init4();
+        adc_init_ain1();
         HAL_Delay(1000);
+        
+        adc_init_unap();
+        HAL_Delay(1000);        
+        
+        adc_init_uref();
+        HAL_Delay(1000);
+        
         
         adc_init_internal_temperature();
         HAL_Delay(1000);
         
-        adc_init_Ucc();
-        HAL_Delay(1000);
         
-        adc_init_Uref();
-        HAL_Delay(3000);
+        
+        
         
        
         /*char buffer[80];

@@ -113,18 +113,18 @@ double adc_average_temp(double temperature)
 //function for calculate temperature from measurement sample
 double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 {
-    #define ADC_MESSAGE_REDUCTION 20      // number for reduction speed of print temperature
+    #define ADC_MESSAGE_REDUCTION1 20      // number for reduction speed of print temperature
     static uint16_t message_reduction = 0;
 
     char buffer[80];
     double voltage, resistance, temperature;
-    double t      = 0, r = 0, v = 0;
+    double t = 0, r = 0, v = 0;
     int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
     //int16_t sample = ((((uint16_t) msb) << 8) + lsb);
 
     message_reduction++;
 
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+    if (sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
                                                                 //measurement sample
     {
         voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
@@ -135,7 +135,7 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
         t = temperature;
         v = voltage;
         
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        if (message_reduction == ADC_MESSAGE_REDUCTION1)
         {
             led_green_on();
             message_reduction = 0;
@@ -157,11 +157,11 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
             // is evaluated short or open circuit
     {   led_green_off();
         led_red_on();
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        if (message_reduction == ADC_MESSAGE_REDUCTION1)
         {
             message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
+            debug("Sample value error: ");
+            debug("open or short circuit\n");
         }
         led_red_off();
     }
@@ -173,18 +173,17 @@ double adc_calculate_temp(uint8_t msb, uint8_t lsb)
 //function for calculate voltage from measurement sample
 double adc_calculate_voltage(uint8_t msb, uint8_t lsb)
 {
-    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
+    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print voltage
     static uint16_t message_reduction = 0;
 
     char buffer[80];
     double voltage;
     double v = 0;
-    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
     int16_t sample = ((((uint16_t) msb) << 8) + lsb);
 
     message_reduction++;
 
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+    if (sample > ADC_EXTREF_MIN && sample < ADC_EXTREF_MAX)       //range for calculate temperature from
                                                                 //measurement sample
     {
         voltage     = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
@@ -196,160 +195,7 @@ double adc_calculate_voltage(uint8_t msb, uint8_t lsb)
             led_green_on();
             message_reduction = 0;
             
-            snprintf(buffer, 80, "\t Extern reference 0.21 V =  %+4.4f V\n", v);
-            debug(buffer);
-            //snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
-            //debug(buffer);
-            //snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
-            //debug(buffer);
-            
-            
-        }
-    }
-    else    // if range is outside setting temperature (-50 to +250 °C)
-            // is evaluated short or open circuit
-    {   led_green_off();
-        led_red_on();
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
-        {
-            message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
-        }
-        led_red_off();
-    }
-
-    return v;
-}
-
-double adc_calculate_voltage2(uint8_t msb, uint8_t lsb)
-{
-    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
-    static uint16_t message_reduction = 0;
-
-    char buffer[80];
-    double voltage;
-    double v = 0;
-    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
-    int16_t sample = ((((uint16_t) msb) << 8) + lsb);
-
-    message_reduction++;
-
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
-                                                                //measurement sample
-    {
-        voltage     = ((2.048 / ADC_PRECISION) * ((double) sample));
-        
-        v = voltage;
-        
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
-        {
-            led_green_on();
-            message_reduction = 0;
-            
-            snprintf(buffer, 80, "\t AIN1 on PT100 =  %+4.4f V\n", v);
-            debug(buffer);
-            //snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
-            //debug(buffer);
-            //snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
-            //debug(buffer);
-            
-            
-        }
-    }
-    else    // if range is outside setting temperature (-50 to +250 °C)
-            // is evaluated short or open circuit
-    {   led_green_off();
-        led_red_on();
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
-        {
-            message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
-        }
-        led_red_off();
-    }
-
-    return v;
-}
-
-double adc_calculate_voltage3(uint8_t msb, uint8_t lsb)
-{
-    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
-    static uint16_t message_reduction = 0;
-
-    char buffer[80];
-    double voltage;
-    double v = 0;
-    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
-    int16_t sample = ((((uint16_t) msb) << 8) + lsb);
-
-    message_reduction++;
-
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
-                                                                //measurement sample
-    {
-        voltage     = ((2.048 / ADC_PRECISION) * ((double) sample));
-        
-        v = voltage;
-        
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
-        {
-            led_green_on();
-            message_reduction = 0;
-            
-            snprintf(buffer, 80, "\t AIN0 on PT100 =  %+4.4f V\n", v);
-            debug(buffer);
-            //snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
-            //debug(buffer);
-            //snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
-            //debug(buffer);
-            
-            
-        }
-    }
-    else    // if range is outside setting temperature (-50 to +250 °C)
-            // is evaluated short or open circuit
-    {   led_green_off();
-        led_red_on();
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
-        {
-            message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
-        }
-        led_red_off();
-    }
-
-    return v;
-}
-
-double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
-{
-    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
-    static uint16_t message_reduction = 0;
-
-    char buffer[80];
-    double i_temp;
-    double t = 0;
-    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
-    int16_t sample = ((((uint16_t) msb) << 6) + lsb);
-
-    message_reduction++;
-
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
-                                                                //measurement sample
-    {
-        i_temp     = ((TEMP_STEP) * ((double) sample));
-        
-        t = i_temp;
-        
-        if (message_reduction == ADC_MESSAGE_REDUCTION)
-        {
-            led_green_on();
-            message_reduction = 0;
-            
-            snprintf(buffer, 80, "\t Internal temperature =  %+4.4f °C", t);
+            snprintf(buffer, 80, "\t Extern reference 0.21 V =  %+4.4f V", v);
             debug(buffer);
             snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
             debug(buffer);
@@ -359,23 +205,83 @@ double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
             
         }
     }
-    else    // if range is outside setting temperature (-50 to +250 °C)
+    else    // if range is outside setting temperature (0.18 to 0.23 V)
+            // is evaluated error
+    {   led_green_off();
+        led_red_on();
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            voltage = ((ADC_U_REF / ADC_PRECISION) * ((double) sample)) / ADC_GAIN;
+            v = voltage;
+            
+            message_reduction = 0;
+            debug("Sample value error: ");
+            snprintf(buffer, 80, "\t EXTERN REFERENCE =  %+4.4f V", v);
+            debug(buffer);
+            debug("\tERROR!!! HIGH OR LOW VOLTAGE\n");
+        }
+        led_red_off();
+    }
+
+    return v;
+}
+
+double adc_calculate_voltage_ain1(uint8_t msb, uint8_t lsb)
+{
+    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print voltage
+    static uint16_t message_reduction = 0;
+
+    char buffer[80];
+    double voltage;
+    double v = 0;
+    int16_t sample = ((((uint16_t) msb) << 8) + lsb);
+
+    message_reduction++;
+
+    if (sample > ADC_AIN1_MIN && sample < ADC_AIN1_MAX)       //range for calculate voltage from
+                                                              //measurement sample
+    {
+        voltage     = ((ADC_U_REF_INTER / ADC_PRECISION) * ((double) sample));
+        
+        v = voltage;
+        
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            led_green_on();
+            message_reduction = 0;
+            
+            snprintf(buffer, 80, "\t AIN1 to AVSS =  %+4.4f V", v);
+            debug(buffer);
+            snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+            debug(buffer);
+            snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+            debug(buffer);
+            
+            
+        }
+    }
+    else    // if range is outside setting (1.18 to 1,56)
             // is evaluated short or open circuit
     {   led_green_off();
         led_red_on();
         if (message_reduction == ADC_MESSAGE_REDUCTION)
         {
+            voltage     = ((ADC_U_REF_INTER / ADC_PRECISION) * ((double) sample));
+            v = voltage;
+            
             message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
+            debug("Sample value error: ");
+            snprintf(buffer, 80, "\t AIN1 to AVSS =  %+4.4f V", v);
+            debug(buffer);
+            debug("\tERROR!!! HIGH OR LOW VOLTAGE\n");
         }
         led_red_off();
     }
 
-    return t;
+    return v;
 }
 
-double adc_calculate_Ucc(uint8_t msb, uint8_t lsb)
+double adc_calculate_voltage_ain0(uint8_t msb, uint8_t lsb)
 {
     #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
     static uint16_t message_reduction = 0;
@@ -383,15 +289,139 @@ double adc_calculate_Ucc(uint8_t msb, uint8_t lsb)
     char buffer[80];
     double voltage;
     double v = 0;
-    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
     int16_t sample = ((((uint16_t) msb) << 8) + lsb);
 
     message_reduction++;
 
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+    if (sample > ADC_AIN0_MIN && sample < ADC_AIN0_MAX)       //range for calculate voltage AIN0 to AVSS
+                                                              //measurement sample
+    {
+        voltage     = ((ADC_U_REF_INTER / ADC_PRECISION) * ((double) sample));
+        
+        v = voltage;
+        
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            led_green_on();
+            message_reduction = 0;
+            
+            snprintf(buffer, 80, "\t AIN0 to AVSS =  %+4.4f V", v);
+            debug(buffer);
+            snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+            debug(buffer);
+            snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+            debug(buffer);
+            
+            
+        }
+    }
+    else    // if range is outside setting temperature (1.2 V)
+            // is evaluated ERROR
+    {   led_green_off();
+        led_red_on();
+        if (message_reduction == ADC_MESSAGE_REDUCTION)
+        {
+            voltage     = ((ADC_U_REF_INTER / ADC_PRECISION) * ((double) sample));
+            v = voltage;
+            
+            message_reduction = 0;
+            debug("Sample value error: ");
+            snprintf(buffer, 80, "\t AIN0 to AVSS =  %+4.4f V", v);
+            debug(buffer);
+            debug("\tERROR!!! HIGH OR LOW VOLTAGE\n");
+        }
+        led_red_off();
+    }
+
+    return v;
+}
+
+double adc_calculate_internal_temperature(uint8_t msb, uint8_t lsb)
+{
+    #define ADC_MESSAGE_REDUCTION2 10      // number for reduction speed of print temperature
+    static uint16_t message_reduction = 0;
+
+    char buffer[80];
+    double i_temp;
+    double t = 0;
+    int16_t sample = ((((uint16_t) msb) << 6) + lsb);
+
+    message_reduction++;
+
+    if (1)//(sample < TEMP_BORDER)//udelat merení do minusu(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
                                                                 //measurement sample
     {
-        voltage     = (((2.048) / ADC_PRECISION) * (((double) sample) )) * 4;
+        i_temp     = ((TEMP_STEP) * ((double) sample));
+        
+        t = i_temp;
+        
+        if (message_reduction == ADC_MESSAGE_REDUCTION2)
+        {
+            led_green_on();
+            message_reduction = 0;
+            
+            snprintf(buffer, 80, "\t Internal temperature plus =  %+4.4f °C", t);
+            debug(buffer);
+            snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+            debug(buffer);
+            snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+            debug(buffer);
+            
+            
+        }
+    }
+    else if ( sample > TEMP_BORDER)
+    {
+        sample = ~(sample) + 1;
+        i_temp     = ((- TEMP_STEP) * ((double) sample));
+        t = i_temp;
+        
+        if (message_reduction == ADC_MESSAGE_REDUCTION2)
+        {
+            led_green_on();
+            message_reduction = 0;
+            
+            snprintf(buffer, 80, "\t Internal temperature minus =  %+4.4f °C", t);
+            debug(buffer);
+            snprintf(buffer, 80, "\t%+4.0f sample in DEC", ((double)sample));
+            debug(buffer);
+            snprintf(buffer, 80, "\t%4x sample in HEX\n", (sample));
+            debug(buffer);
+               
+        }
+        
+    }
+    else    
+    {   led_green_off();
+        led_red_on();
+        if (message_reduction == ADC_MESSAGE_REDUCTION2)
+        {
+            message_reduction = 0;
+            debug("Sample value error: ");
+            debug("TEMPERATURE ERROR\n");
+        }
+        led_red_off();
+    }
+
+    return t;
+}
+
+double adc_calculate_unap(uint8_t msb, uint8_t lsb)
+{
+    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print voltage
+    static uint16_t message_reduction = 0;
+
+    char buffer[80];
+    double voltage;
+    double v = 0;
+    int16_t sample = ((((uint16_t) msb) << 8) + lsb);
+
+    message_reduction++;
+
+    if (sample > ADC_UNAP_MIN && sample < ADC_UNAP_MAX)       //range for calculate voltage from
+                                                                //measurement sample
+    {
+        voltage     = (((ADC_U_REF_INTER) / ADC_PRECISION) * (((double) sample) )) * 4;
         
         v = voltage;
         
@@ -410,15 +440,20 @@ double adc_calculate_Ucc(uint8_t msb, uint8_t lsb)
             
         }
     }
-    else    // if range is outside setting temperature (-50 to +250 °C)
-            // is evaluated short or open circuit
+    else    // if range is outside setting temperature (3.0 to 3.5)
+            // is evaluated ERROR
     {   led_green_off();
         led_red_on();
         if (message_reduction == ADC_MESSAGE_REDUCTION)
         {
+            voltage     = (((ADC_U_REF_INTER) / ADC_PRECISION) * (((double) sample) )) * 4;
+            v = voltage;
+            
             message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
+            debug("Sample value error: ");
+            snprintf(buffer, 80, "\t Supply voltage =  %+4.4f V", v);
+            debug(buffer);
+            debug("\tERROR!!! HIGH OR LOW VOLTAGE\n");
         }
         led_red_off();
     }
@@ -426,23 +461,22 @@ double adc_calculate_Ucc(uint8_t msb, uint8_t lsb)
     return v;
 }
 
-double adc_calculate_Uref(uint8_t msb, uint8_t lsb)
+double adc_calculate_uref(uint8_t msb, uint8_t lsb)
 {
-    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print temperature
+    #define ADC_MESSAGE_REDUCTION 10      // number for reduction speed of print voltage
     static uint16_t message_reduction = 0;
 
     char buffer[80];
     double voltage;
     double v = 0;
-    //int16_t sample = ~((((uint16_t) msb) << 8) + lsb) + 1;  //DVOJKOVÝ DOPLNEK
     int16_t sample = ((((uint16_t) msb) << 8) + lsb);
 
     message_reduction++;
 
-    if (1)//(sample > ADC_LIMIT_MIN && sample < ADC_LIMIT_MAX)       //range for calculate temperature from
+    if (sample > ADC_UREF_MIN && sample < ADC_UREF_MAX)       //range for calculate voltage from
                                                                 //measurement sample
     {
-        voltage     = (((2.048) / ADC_PRECISION) * (((double) sample) )) * 4;
+        voltage     = (((ADC_U_REF_INTER) / ADC_PRECISION) * (((double) sample) )) * 4;
         
         v = voltage;
         
@@ -467,9 +501,14 @@ double adc_calculate_Uref(uint8_t msb, uint8_t lsb)
         led_red_on();
         if (message_reduction == ADC_MESSAGE_REDUCTION)
         {
+            voltage     = (((ADC_U_REF_INTER) / ADC_PRECISION) * (((double) sample) )) * 4;
+            v = voltage;
+            
             message_reduction = 0;
-            debug("Sample value error:\n");
-            debug("\topen or short circuit\n");
+            debug("Sample value error: ");
+            snprintf(buffer, 80, "\t Reference voltage =  %+4.4f V", v);
+            debug(buffer);
+            debug("\tERROR!!! HIGH OR LOW VOLTAGE\n");
         }
         led_red_off();
     }
@@ -495,11 +534,11 @@ void adc_get_sample(void)
         }
         else if (stav == 3)
         {
-            adc_calculate_voltage2(adc_rx_data[0], adc_rx_data[1]);
+            adc_calculate_voltage_ain1(adc_rx_data[0], adc_rx_data[1]);
         }
         else if (stav == 4)
         {
-            adc_calculate_voltage3(adc_rx_data[0], adc_rx_data[1]);
+            adc_calculate_voltage_ain0(adc_rx_data[0], adc_rx_data[1]);
         }
         else if (stav == 5)
         {
@@ -507,11 +546,11 @@ void adc_get_sample(void)
         }
         else if (stav == 6)
         {
-            adc_calculate_Ucc(adc_rx_data[0], adc_rx_data[1]);
+            adc_calculate_unap(adc_rx_data[0], adc_rx_data[1]);
         }
         else if (stav == 7)
         {
-            adc_calculate_Uref(adc_rx_data[0], adc_rx_data[1]);
+            adc_calculate_uref(adc_rx_data[0], adc_rx_data[1]);
         }
         
         
@@ -578,7 +617,7 @@ void adc_init(void)
     }
 }
 
-void adc_init2(void)
+void adc_init_extref(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
@@ -621,7 +660,7 @@ void adc_init2(void)
     }
 }
 
-void adc_init3(void)
+void adc_init_ain1(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
@@ -664,7 +703,7 @@ void adc_init3(void)
     }
 }
 
-void adc_init4(void)
+void adc_init_ain0(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
@@ -750,7 +789,7 @@ void adc_init_internal_temperature(void)
     }
 }
 
-void adc_init_Ucc(void)
+void adc_init_unap(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
@@ -794,7 +833,7 @@ void adc_init_Ucc(void)
 }
 
 
-void adc_init_Uref(void)
+void adc_init_uref(void)
 {
     adc_buffer_clear(adc_rx_data);
     adc_buffer_clear(adc_tx_data);
