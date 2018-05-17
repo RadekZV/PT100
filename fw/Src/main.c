@@ -115,7 +115,7 @@ int main(void)
         
 
         adc_init();
-        HAL_Delay(8000);
+        HAL_Delay(20000);
 
         adc_init_extref();
         HAL_Delay(1000);
@@ -131,7 +131,6 @@ int main(void)
         
         adc_init_uref();
         HAL_Delay(1000);
-        
         
         adc_init_internal_temperature();
         HAL_Delay(1000);

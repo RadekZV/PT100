@@ -118,10 +118,11 @@
 
 //constant for calculate impedance
 #define ADC_U_REF     1.0
+#define ADC_R_REF     994.4010318
 #define ADC_U_REF_INTER     2.048
-#define ADC_I_REF     1e-3
+#define ADC_I_REF     1.0E-3
 #define ADC_PRECISION 32768
-#define ADC_GAIN      4
+#define ADC_GAIN      4.0
 #define ADC_LIMIT_MIN      9000
 #define ADC_LIMIT_MAX      27600
 #define ADC_EXTREF_MIN     23600
@@ -136,6 +137,9 @@
 #define ADC_UREF_MAX     4800
 #define TEMP_STEP     0.03125
 #define TEMP_BORDER     8192
+#define TEMP_LOW        16385
+#define TEMP_CORRECT    49152
+#define TEMP_MINUS_SIXTY    1920
 
 //constant for calculate temperature
 #define ADC_PT100_CONST_C0 -245.19
